@@ -112,24 +112,15 @@ boxplot(double_data)
 ## using the IQR to remove the outliers
 
 # carat
-IQR_carat <- IQR(data$carat) # nolint
-IQR_carat
-# finding the lower and lower quatiles
-carat_quatiles <- quantile(data$carat, probs = c(.25, .75), na.rm = FALSE)
-carat_lower_quartile <- carat_quatiles[1] - (2.9 * IQR_carat)
-carat_upper_quartile <- carat_quatiles[2] + (2.0 * IQR_carat)
-carat_lower_quartile
-carat_upper_quartile
 
-# filtering out the outliers for carat
-carat_outliers <- subset(data, data$carat < carat_lower_quartile | data$carat > carat_upper_quartile) # nolint
-carat_outliersn
-ggplot(carat_outliers, aes(x = "", y = carat)) +
+carat_quatiles <- quantile(data$carat, probs = c(.25, .75), na.rm = TRUE)
+H <- 1.5 * IQR(data$carat, na.rm = TRUE)
+data <- data[which(data$carat > carat_quatiles[1] - H & data$carat < carat_quatiles[2] + H), ] # nolint
+boxplot(data$carat)
+
+ggplot(data, aes(x = "", y = carat)) +
     geom_boxplot()
 
-boxplot(carat_outliers$carat)
-#
-hist(carat_outliers$carat)
 # price
 IQR_price <- IQR(data$price) # nolint
 IQR_price
@@ -142,25 +133,22 @@ price_lower_quartile
 price_upper_quartile
 
 # filtering out the outliers for price
-price_outliers <- subset(data, data$price < price_lower_quartile | data$price > price_upper_quartile) # nolint
-price_outliers
-
-hist(price_outliers$price)
+data <- data[which(data$price < price_lower_quartile | data$price > price_upper_quartile),] # nolint
+boxplot(data$price)
 
 # x
-IQR_x <- IQR(data$x) # nolint
+IQR_x <- IQR(data$x, na.rm = TRUE) # nolint
 
 # finding the lower and lower quatiles
 x_quatiles <- quantile(data$x, probs = c(.25, .75), na.rm = FALSE)
-
 x_lower_quartile <- x_quatiles[1] - (1.5 * IQR_x)
 x_upper_quartile <- x_quatiles[2] + (1.5 * IQR_x)
 x_lower_quartile
 x_upper_quartile
 
 # filtering out the outliers for x
-x_outliers <- subset(data$x < x_lower_quartile | data$x > x_upper_quartile)
-x_outliers
+data <- data[which(data$x < x_lower_quartile | data$x > x_upper_quartile),] # nolint
+boxplot(data$x)
 
 # y
 IQR_y <- IQR(data$y) # nolint
@@ -174,8 +162,8 @@ y_lower_quartile
 y_upper_quartile
 
 # filtering out the outliers for y
-y_outliers <- subset(data$y < y_lower_quartile | data$y > y_upper_quartile)
-y_outliers
+data <- data[which(data$y < y_lower_quartile | data$y > y_upper_quartile),]
+boxplot(data$y)
 
 # depth
 IQR_depth <- IQR(data$depth) # nolint
@@ -183,37 +171,18 @@ IQR_depth <- IQR(data$depth) # nolint
 # finding the lower and lower quatiles
 depth_quatiles <- quantile(data$depth, probs = c(.25, .75), na.rm = FALSE)
 
-depth_lower_quartile <- depth_quatiles[1] - (1.5 * IQR_depth)
+depth_lower_quartile <- depth_quatiles[1] - (1.6 * IQR_depth)
 depth_upper_quartile <- depth_quatiles[2] + (1.5 * IQR_depth)
 depth_lower_quartile
 depth_upper_quartile
 
 # filtering out the outliers for depth
-depth_outliers <- subset(data, data$depth < depth_lower_quartile | data$depth > depth_upper_quartile) # nolint
-depth_outliers
+data <- data[which(data$depth < depth_lower_quartile | data$depth > depth_upper_quartile),] # nolint
+boxplot(data$depth)
 
 # boxplot for the double data after removing the outliers
-boxplot(double_data)
-
-## Visualizing the data after removing the outliers
-# carat
-ggplot(data, aes(x = carat)) +
-    geom_histogram()
-# price
-ggplot(data, aes(x = price)) +
-    geom_histogram()
-# x
-ggplot(data, aes(x = x)) +
-    geom_histogram()
-# y
-ggplot(data, aes(x = y)) +
-    geom_histogram()
-# depth
-ggplot(data, aes(x = depth)) +
-    geom_histogram()
-
-
-data$carat_winsorized <- winsorize(data$carat, trim = 0.05)
+current_double_data <- data %>% select_if(is.double)
+boxplot(current_double_data)
 
 # find the relationship between the variables
 
@@ -279,6 +248,7 @@ cat_cont_anova("carat", "clarity")
 
 
 # The relationship between categorical and continious variables can be gotten by
-# displaying the covariation between one and the other using a frequency polygon.
+# displaying the covariation between one and the other using a frequency polygon. # nolint
 ggplot(data = data, mapping = aes(x = price)) +
     geom_freqpoly(mapping = aes(color = PC), binwidth = 500)
+
