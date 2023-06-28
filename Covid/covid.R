@@ -71,7 +71,6 @@ removing_outliers <- function(data, columns) {
         q1 <- quantiles[1] - 1.5 * iqr_z
         q2 <- quantiles[2] + 1.5 * iqr_z
         data <- data[which((data[[column]] >= q1) & (data[[column]] <= q2)), ] # nolint
-        # data <- data[which((data[[column]] >= lower_quantile) & (data[[column]] <= upper_quantile)), ] # nolint
     }
     return(data)
 }
