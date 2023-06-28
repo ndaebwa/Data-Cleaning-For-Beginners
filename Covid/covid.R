@@ -3,7 +3,6 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 
-
 ## Reading the dataset
 data <- read_csv("C:/Users/Hello/Desktop/DS Python and R/Datasets/who_covid19.csv") # nolint
 data
